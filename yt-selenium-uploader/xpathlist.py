@@ -1,0 +1,5 @@
+SIGN_IN_BUTTON = '//*[@id="topbar"]/div[2]/div[2]/ytd-button-renderer/yt-button-shape'
+EMAIL_ADDRESS_INPUT = '//*[@id="identifierId"]'
+PASSWORD_INPUT = '//*[@id="password"]/div[1]/div/div[1]/input'
+NEXT_SIGN_IN = '//*[@id="identifierNext"]/div'
+NEXT_PASSWORD = '//*[@id="passwordNext"]/div/button'
