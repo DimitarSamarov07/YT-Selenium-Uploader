@@ -5,7 +5,8 @@ setup(
     version='1.0',
     packages=['yt-selenium-uploader'],
     install_requires=[
-        'undetected-chromedriver'
+        'undetected-chromedriver',
+        'pyvirtualdisplay'
     ],
     license="MIT",
     author="Dimitar Samarov",
