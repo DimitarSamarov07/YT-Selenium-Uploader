@@ -94,6 +94,7 @@ def uploadThroughStudio(driver: uc.Chrome, upload: FileUpload):
     WebDriverWait(driver, 60).until(EC.element_to_be_clickable(saveBtn))
 
     saveBtn.click()
+    sleep(5)
 
     while saveBtn.is_enabled() and saveBtn.is_displayed():
         saveBtn.click()
