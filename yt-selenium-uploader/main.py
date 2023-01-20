@@ -1,14 +1,15 @@
+import os
 from time import sleep
 
 import undetected_chromedriver as uc
 from pyvirtualdisplay import Display
-from selenium.webdriver import ActionChains
+from selenium.webdriver import ActionChains, Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 import xpathlist as xpath
-from classes import FileUpload
+from classes import FileUpload, VideoVisibility
 
 runInVirtualDisplay = False
 
@@ -62,13 +63,31 @@ def uploadThroughStudio(driver: uc.Chrome, upload: FileUpload):
 
     privacyXPATH = xpath.PUBLIC_RADIO_BTN
 
-    if upload.privacy == "unlisted":
+    if upload.privacy is VideoVisibility.UNLISTED:
         privacyXPATH = xpath.UNLISTED_RADIO_BTN
-    elif upload.privacy == "private":
+    elif upload.privacy is VideoVisibility.PRIVATE:
         privacyXPATH = xpath.PRIVATE_RADIO_BTN
+    elif upload.privacy is VideoVisibility.SCHEDULED:
+        privacyXPATH = xpath.SCHEDULED_RADIO_BTN
 
     privacyRadio = driver.find_element(By.XPATH, privacyXPATH)
     privacyRadio.click()
+
+    if upload.privacy is VideoVisibility.SCHEDULED:
+        date, time = upload.retrieveScheduleDates()
+
+        timeInput = driver.find_element(By.XPATH, xpath.SCHEDULE_TIME_INPUT)
+        timeInput.send_keys(Keys.CONTROL + "a")
+        timeInput.send_keys(Keys.DELETE)
+        timeInput.send_keys(time)
+
+        driver.find_element(By.XPATH, xpath.SCHEDULE_EXPAND_TRIGGER).click()
+
+        dateInput = driver.find_element(By.XPATH, xpath.SCHEDULE_DATE_INPUT)
+        dateInput.send_keys(Keys.CONTROL + "a")
+        dateInput.send_keys(Keys.DELETE)
+        dateInput.send_keys(date)
+        dateInput.send_keys(Keys.ENTER)
 
     saveBtn = driver.find_element(By.XPATH, xpath.SAVE_VIDEO_BTN)
 
@@ -76,7 +95,7 @@ def uploadThroughStudio(driver: uc.Chrome, upload: FileUpload):
 
     saveBtn.click()
 
-    while saveBtn.is_displayed():
+    while saveBtn.is_enabled() and saveBtn.is_displayed():
         saveBtn.click()
         sleep(5)
 
@@ -85,10 +104,12 @@ def scrollToElement(driver, element):
     ActionChains(driver).move_to_element(element).perform()
 
 
+# Example code here:
 # drivers = initialize_driver()
 # signIn(drivers, "example@example.com", "test123")
 # uploadFile = FileUpload()
-# uploadFile.setVideo(os.path.abspath("./final.mp4"), "public")
+# uploadFile.setVideo(os.path.abspath("./final.mp4"), VideoVisibility.SCHEDULED)
 # uploadFile.setMetadata("Test", "Test123", ["ama", "Reddit"])
 # uploadFile.setThumbnail(os.path.abspath("./thumbnail.png"))
+# uploadFile.configureSchedule(23, 2, 2023, 14, 30)
 # uploadThroughStudio(drivers, uploadFile)
